@@ -1,0 +1,77 @@
+:root {
+  --bg-color: white;
+  --text-color: black;
+  --circle-color: #b3d9ff;
+  --obstacle-color: #003366;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: black;
+    --text-color: white;
+    --obstacle-color: #b3d9ff;
+    --circle-color: #003366;
+  }
+
+  image {
+    filter: invert(1);
+  }
+}
+
+body {
+  background: var(--bg-color);
+  color: var(--text-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  font-size: 1.4rem;
+  user-select: none;
+  font-family:
+    "Noto Sans SC",
+    system-ui,
+    -apple-system;
+}
+
+#container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 70vh;
+  gap: 1rem;
+}
+
+svg {
+  width: 100%;
+  height: 100%;
+}
+
+circle {
+  fill: var(--circle-color);
+  transition: fill 0.2s ease;
+  cursor: pointer;
+}
+
+circle:not(.obstacle):hover {
+  opacity: 0.7;
+}
+
+circle.obstacle {
+  fill: var(--obstacle-color);
+  cursor: unset;
+}
+
+#reset {
+  cursor: pointer;
+}
+
+image {
+  pointer-events: none;
+}
+
+#controls {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
