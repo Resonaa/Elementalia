@@ -4,13 +4,12 @@
     "": {
       "name": "elementalia",
       "dependencies": {
-        "@fontsource-variable/noto-sans-sc": "^5.2.5",
         "@types/lodash": "^4.17.16",
         "lodash": "^4.17.21",
       },
       "devDependencies": {
-        "typescript": "~5.7.2",
-        "vite": "^6.2.0",
+        "typescript": "~5.7.3",
+        "vite": "^6.2.3",
       },
     },
   },
@@ -64,8 +63,6 @@
     "@esbuild/win32-ia32": ["@esbuild/win32-ia32@0.25.1", "", { "os": "win32", "cpu": "ia32" }, "sha512-uOxSJCIcavSiT6UnBhBzE8wy3n0hOkJsBOzy7HDAuTDE++1DJMRRVCPGisULScHL+a/ZwdXPpXD3IyFKjA7K8A=="],
 
     "@esbuild/win32-x64": ["@esbuild/win32-x64@0.25.1", "", { "os": "win32", "cpu": "x64" }, "sha512-Y1EQdcfwMSeQN/ujR5VayLOJ1BHaK+ssyk0AEzPjC+t1lITgsnccPqFjb6V+LsTp/9Iov4ysfjxLaGJ9RPtkVg=="],
-
-    "@fontsource-variable/noto-sans-sc": ["@fontsource-variable/noto-sans-sc@5.2.5", "", {}, "sha512-TRxlLdbTMNq7XbTQN6XYsx8fdlg9MGZE5tVGzqCRi3audF4yugjino1NuwaKd5La+063qTSFXoRJf+sBv1ATXg=="],
 
     "@rollup/rollup-android-arm-eabi": ["@rollup/rollup-android-arm-eabi@4.38.0", "", { "os": "android", "cpu": "arm" }, "sha512-ldomqc4/jDZu/xpYU+aRxo3V4mGCV9HeTgUBANI3oIQMOL+SsxB+S2lxMpkFp5UamSS3XuTMQVbsS24R4J4Qjg=="],
 

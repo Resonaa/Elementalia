@@ -10,11 +10,10 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "typescript": "~5.7.2",
-    "vite": "^6.2.0"
+    "typescript": "~5.7.3",
+    "vite": "^6.2.3"
   },
   "dependencies": {
-    "@fontsource-variable/noto-sans-sc": "^5.2.5",
     "@types/lodash": "^4.17.16",
     "lodash": "^4.17.21"
   }

@@ -28,10 +28,6 @@ body {
   margin: 0;
   font-size: 1.4rem;
   user-select: none;
-  font-family:
-    "Noto Sans SC",
-    system-ui,
-    -apple-system;
 }
 
 #container {
@@ -49,12 +45,7 @@ svg {
 
 circle {
   fill: var(--circle-color);
-  transition: fill 0.2s ease;
   cursor: pointer;
-}
-
-circle:not(.obstacle):hover {
-  opacity: 0.7;
 }
 
 circle.obstacle {

@@ -1,6 +1,7 @@
 import { Directions } from "./direction";
 import { Position } from "./position";
-import { random, shuffle } from "lodash";
+import random from "lodash/random";
+import shuffle from "lodash/shuffle";
 
 export class Board {
   obstacles = new Set<string>();

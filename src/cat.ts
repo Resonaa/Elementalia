@@ -1,21 +1,35 @@
-import { sample } from "lodash";
+import sample from "lodash/sample";
 
 import { Board } from "./board";
 import { Directions } from "./direction";
 import { Position } from "./position";
+
+interface Target {
+  pos: Position;
+  dist: number;
+  next: Position;
+}
 
 export class Cat {
   pos = new Position();
   dir: keyof typeof Directions = "bottom_left";
   lost = false;
 
+  distCache = new Map();
+
   getDist(board: Board, from: Position, to: Position) {
+    const cacheKey = `${board.depth}:${from},${to}`;
+    if (this.distCache.has(cacheKey)) {
+      return this.distCache.get(cacheKey);
+    }
+
     const vis = new Set();
     const q = [{ pos: from, dist: 0 }];
 
     while (q.length > 0) {
       const cur = q.splice(0, 1)[0];
       if (cur.pos.eq(to)) {
+        this.distCache.set(cacheKey, cur.dist);
         return cur.dist;
       }
 
@@ -32,26 +46,29 @@ export class Cat {
   }
 
   getPossibleTargets(board: Board) {
-    const vis = new Set();
-    const q = [{ pos: this.pos, dist: 0, next: this.pos }];
-    const targets = [];
+    const targets = new Map<string, Target>();
 
-    while (q.length > 0) {
-      const cur = q.splice(0, 1)[0];
+    for (let i = 0; i < 3; i++) {
+      const vis = new Set();
+      const q = [{ pos: this.pos, dist: 0, next: this.pos }];
 
-      if (board.ifCatWins(cur.pos)) {
-        targets.push(cur);
-        continue;
-      }
+      while (q.length > 0) {
+        const cur = q.splice(0, 1)[0];
 
-      for (const newPos of board.neighbors(cur.pos, true)) {
-        if (!vis.has(newPos.toString())) {
-          vis.add(newPos.toString());
-          q.push({
-            pos: newPos,
-            dist: cur.dist + 1,
-            next: cur.dist === 0 ? newPos : cur.next,
-          });
+        if (board.ifCatWins(cur.pos)) {
+          targets.set(JSON.stringify(cur), cur);
+          continue;
+        }
+
+        for (const newPos of board.neighbors(cur.pos, true)) {
+          if (!vis.has(newPos.toString())) {
+            vis.add(newPos.toString());
+            q.push({
+              pos: newPos,
+              dist: cur.dist + 1,
+              next: cur.dist === 0 ? newPos : cur.next,
+            });
+          }
         }
       }
     }
@@ -61,14 +78,20 @@ export class Cat {
 
   getTarget(board: Board) {
     const targets = this.getPossibleTargets(board);
-    let ansTarget = targets[0].next;
+    let ansTarget = new Position();
     let minScore = Number.MAX_SAFE_INTEGER;
+    let minDist = Number.MAX_SAFE_INTEGER;
 
-    for (const target of targets) {
+    for (const target of targets.values()) {
+      minDist = Math.min(minDist, target.dist);
+    }
+
+    for (const target of targets.values()) {
       let score =
         target.dist === 1
           ? Number.MIN_SAFE_INTEGER
-          : (target.dist - targets[0].dist) * board.depth;
+          : (target.dist - minDist) * board.depth;
+
       for (const obstacleString of board.obstacles.keys()) {
         const obstaclePos = Position.fromString(obstacleString);
         const dist = this.getDist(board, target.pos, obstaclePos);
