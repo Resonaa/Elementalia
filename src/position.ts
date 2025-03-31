@@ -25,10 +25,6 @@ export class Position {
     return new Position(this.q - other.q, this.r - other.r);
   }
 
-  mulScalar(scalar: number) {
-    return new Position(this.q * scalar, this.r * scalar);
-  }
-
   toString() {
     return `${this.q},${this.r}`;
   }

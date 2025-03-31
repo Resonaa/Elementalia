@@ -13,7 +13,6 @@ interface Target {
 export class Cat {
   pos = new Position();
   dir: keyof typeof Directions = "bottom_left";
-  lost = false;
 
   distCache = new Map();
 
@@ -123,6 +122,5 @@ export class Cat {
   reset() {
     this.pos.set(0, 0);
     this.dir = sample(Object.keys(Directions)) as keyof typeof Directions;
-    this.lost = false;
   }
 }

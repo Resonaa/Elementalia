@@ -5,6 +5,11 @@
   --obstacle-color: #003366;
 }
 
+* {
+  transition-timing-function: ease;
+  transition-duration: 0.2s;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --bg-color: black;

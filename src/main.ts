@@ -4,17 +4,14 @@ import { Board } from "./board";
 import { Position } from "./position";
 import { Cat } from "./cat";
 import { Directions } from "./direction";
-import { preload } from "./preload";
 
 const DEPTH = 7;
 const INITIAL_OBSTACLES = 4;
 
 const board = new Board(DEPTH);
 const cat = new Cat();
-let gameActive = true;
-let canClick = true;
 
-let animationResolve: undefined | ((value: boolean) => void);
+let gameActive = true;
 
 const svg = document.querySelector("svg") as HTMLOrSVGElement as SVGElement;
 const message = document.getElementById("message") as HTMLDivElement;
@@ -22,8 +19,6 @@ const resetBtn = document.getElementById("reset") as HTMLButtonElement;
 const catElement = document.querySelector(
   "image",
 ) as HTMLOrSVGImageElement as SVGImageElement;
-
-let catMeta = { x: 0, y: 0, width: 0, height: 0 };
 
 updateViewBox();
 initEventListeners();
@@ -66,106 +61,74 @@ function generateHexGrid() {
   }
 }
 
-function placeCat() {
-  const { q, r } = cat.pos.pixelize();
-  catElement.setAttribute(
-    "href",
-    new URL(`/static/${cat.dir}/${cat.lost ? 2 : 1}.svg`, import.meta.url).href,
-  );
+function getCatSize() {
+  const size = { width: 0, height: 0 };
 
   if (cat.dir.includes("top") || cat.dir.includes("bottom")) {
-    catMeta.width = 2;
-    catMeta.height = 2.8;
+    size.width = 2;
+    size.height = 2.8;
   } else {
-    catMeta.width = 3.42;
-    catMeta.height = 1.8;
+    size.width = 3.42;
+    size.height = 1.8;
   }
+
+  return size;
+}
+
+function getCatPos() {
+  const { q, r } = cat.pos.pixelize();
+  const pos = { x: 0, y: 0 };
 
   if (cat.dir === "bottom_left") {
-    catMeta.x = q - 1.3;
-    catMeta.y = r - 1.3;
+    pos.x = q - 1.3;
+    pos.y = r - 1.3;
+  } else if (cat.dir === "bottom_right") {
+    pos.x = q - 0.7;
+    pos.y = r - 1.3;
+  } else if (cat.dir === "left") {
+    pos.x = q - 2.5;
+    pos.y = r - 1.3;
+  } else if (cat.dir === "right") {
+    pos.x = q - 1.0;
+    pos.y = r - 1.3;
+  } else if (cat.dir === "top_left") {
+    pos.x = q - 1.3;
+    pos.y = r - 2.3;
+  } else if (cat.dir === "top_right") {
+    pos.x = q - 0.7;
+    pos.y = r - 2.3;
   }
 
-  if (cat.dir === "bottom_right") {
-    catMeta.x = q - 0.7;
-    catMeta.y = r - 1.3;
-  }
-
-  if (cat.dir === "left") {
-    catMeta.x = q - 2.5;
-    catMeta.y = r - 1.3;
-  }
-
-  if (cat.dir === "right") {
-    catMeta.x = q - 1.0;
-    catMeta.y = r - 1.3;
-  }
-
-  if (cat.dir === "top_left") {
-    catMeta.x = q - 1.3;
-    catMeta.y = r - 2.3;
-  }
-
-  if (cat.dir === "top_right") {
-    catMeta.x = q - 0.7;
-    catMeta.y = r - 2.3;
-  }
-
-  catElement.setAttribute("width", catMeta.width.toString());
-  catElement.setAttribute("height", catMeta.height.toString());
-  catElement.setAttribute("x", catMeta.x.toString());
-  catElement.setAttribute("y", catMeta.y.toString());
+  return pos;
 }
 
-async function animateCatMove(move: Position, escaped = false) {
-  placeCat();
-
-  let shouldContinue = true;
-
-  for (let frame = 3; frame <= 5; frame++) {
-    catElement.setAttribute(
-      "href",
-      new URL(`/static/${cat.dir}/${frame}.svg`, import.meta.url).href,
-    );
-    if (
-      !(await new Promise((resolve) => {
-        animationResolve = resolve;
-        setTimeout(() => resolve(true), 75);
-      }))
-    ) {
-      shouldContinue = false;
-      break;
-    }
+function placeCat() {
+  for (const [key, value] of Object.entries({
+    href: getCatHref(),
+    ...getCatPos(),
+    ...getCatSize(),
+  })) {
+    catElement.setAttribute(key, value.toString());
   }
+}
 
-  if (escaped && !shouldContinue) {
-    return false;
-  }
+function getCatHref() {
+  return new URL(`/static/${cat.dir}.svg`, import.meta.url).href;
+}
 
+function animateCatMove(move: Position) {
   cat.pos = cat.pos.add(move);
   placeCat();
-
-  return shouldContinue;
 }
 
-async function animateCatEscape() {
-  while (true) {
-    if (!(await animateCatMove(Directions[cat.dir], true))) {
-      cat.pos.set(0, 0);
-      return;
-    }
+function animateCatEscape() {
+  for (let i = 0; i < 10; i++) {
+    animateCatMove(Directions[cat.dir]);
   }
 }
 
 function handleClick(e: MouseEvent) {
-  if (!canClick) {
-    return;
-  }
-
-  animationResolve && animationResolve(false);
-
   if (!gameActive) {
-    canClick = false;
     return resetGame();
   }
 
@@ -184,33 +147,23 @@ function handleClick(e: MouseEvent) {
   circle.classList.add("obstacle");
   board.setObstacle(pos);
 
-  canClick = false;
-
   if (board.ifPlayerWins(cat.pos)) {
     message.textContent = "您赢了！";
-
     gameActive = false;
-    cat.lost = true;
-    placeCat();
-    canClick = true;
     return;
   }
 
   const nextMove = cat.step(board);
-  animateCatMove(nextMove).then(() => {
-    if (board.ifCatWins(cat.pos)) {
-      message.textContent = "小猫逃走了！";
+  animateCatMove(nextMove);
 
-      gameActive = false;
-      animateCatEscape();
-    }
-    canClick = true;
-  });
+  if (board.ifCatWins(cat.pos)) {
+    message.textContent = "小猫逃走了！";
+    gameActive = false;
+    animateCatEscape();
+  }
 }
 
 function resetGame() {
-  canClick = false;
-  animationResolve && animationResolve(false);
   cat.reset();
   board.reset(INITIAL_OBSTACLES);
 
@@ -224,16 +177,16 @@ function resetGame() {
       circle.classList.remove("obstacle");
     }
   }
+
   placeCat();
-  requestAnimationFrame(() => (canClick = gameActive = true));
+  gameActive = true;
 }
 
 function initEventListeners() {
-  svg.addEventListener("click", handleClick);
-  resetBtn.addEventListener("click", resetGame);
+  svg.addEventListener("pointerdown", handleClick);
+  resetBtn.addEventListener("pointerdown", resetGame);
   document.addEventListener("contextmenu", (e) => {
     e.preventDefault();
     return false;
   });
-  window.addEventListener("load", preload);
 }

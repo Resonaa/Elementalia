@@ -5,7 +5,13 @@ export default defineConfig({
   plugins: [
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "apple-touch-icon.png"],
+      injectRegister: "inline",
+      includeAssets: [
+        "favicon.ico",
+        "apple-touch-icon.png",
+        "favicon-16x16.png",
+        "favicon-32x32.png",
+      ],
       manifest: {
         name: "围猫高爆服 ～ Éclipse Containment",
         short_name: "围猫高爆服",
@@ -37,7 +43,7 @@ export default defineConfig({
         ],
         start_url: "/",
         display: "fullscreen",
-        background_color: "#FFFFFF",
+        background_color: "#ffffff",
         theme_color: "#b3d9ff",
         description: "散人打金超高爆率，是兄弟就来围我！",
         lang: "zh-CN",
