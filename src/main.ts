@@ -23,15 +23,12 @@ const catElement = document.querySelector(
   "image",
 ) as HTMLOrSVGImageElement as SVGImageElement;
 
-let messageText = "点击小圆点，围住小猫";
-
 let catMeta = { x: 0, y: 0, width: 0, height: 0 };
 
 updateViewBox();
 initEventListeners();
 generateHexGrid();
 resetGame();
-antiMutation();
 
 function updateViewBox() {
   const right = new Position(DEPTH, 0).pixelize();
@@ -178,10 +175,9 @@ function handleClick(e: MouseEvent) {
   }
 
   const pos = Position.fromString(circle.dataset.coords);
-  messageText = `您点击了 (${pos.r}, ${pos.q})`;
-  message.textContent = messageText;
+  message.textContent = `您点击了 (${pos.r}, ${pos.q})`;
 
-  if (board.isObstacle(pos)) {
+  if (board.isObstacle(pos) || cat.pos.eq(pos)) {
     return;
   }
 
@@ -191,8 +187,7 @@ function handleClick(e: MouseEvent) {
   canClick = false;
 
   if (board.ifPlayerWins(cat.pos)) {
-    messageText = "您赢了！";
-    message.textContent = messageText;
+    message.textContent = "您赢了！";
 
     gameActive = false;
     cat.lost = true;
@@ -204,8 +199,7 @@ function handleClick(e: MouseEvent) {
   const nextMove = cat.step(board);
   animateCatMove(nextMove).then(() => {
     if (board.ifCatWins(cat.pos)) {
-      messageText = "小猫逃走了！";
-      message.textContent = messageText;
+      message.textContent = "小猫逃走了！";
 
       gameActive = false;
       animateCatEscape();
@@ -220,8 +214,7 @@ function resetGame() {
   cat.reset();
   board.reset(INITIAL_OBSTACLES);
 
-  messageText = "点击小圆点，围住小猫";
-  message.textContent = messageText;
+  message.textContent = "点击小圆点，围住小猫";
 
   for (const circle of document.querySelectorAll("circle")) {
     const pos = Position.fromString(circle.dataset.coords!);
@@ -243,134 +236,4 @@ function initEventListeners() {
     return false;
   });
   window.addEventListener("load", preload);
-}
-
-function antiMutation() {
-  function fuck() {
-    location.reload();
-  }
-
-  // anti deletion
-  {
-    new MutationObserver((records) => {
-      for (const record of records) {
-        if (
-          record.removedNodes.length > 0 &&
-          record.nextSibling &&
-          record.previousSibling
-        ) {
-          fuck();
-        }
-      }
-    }).observe(document.body, {
-      childList: true,
-      subtree: true,
-    });
-  }
-
-  // anti text mutation
-  {
-    new MutationObserver(() => {
-      if (message.outerHTML !== `<div id="message">${messageText}</div>`) {
-        fuck();
-      }
-    }).observe(message, {
-      attributes: true,
-      childList: true,
-      subtree: true,
-      characterData: true,
-    });
-  }
-
-  function freeze(element: HTMLElement) {
-    new MutationObserver(fuck).observe(element, {
-      attributes: true,
-      childList: true,
-      subtree: true,
-      characterData: true,
-    });
-  }
-
-  freeze(resetBtn.parentElement!);
-
-  // anti cat mutation
-  {
-    new MutationObserver((records) => {
-      outer: for (const record of records) {
-        if (record.type === "attributes") {
-          if (!record.attributeName) {
-            continue;
-          }
-
-          if (record.attributeName === "href") {
-            const href = catElement.href.baseVal;
-            for (let frame = 1; frame <= 5; frame++) {
-              const src = new URL(
-                `/static/${cat.dir}/${frame}.svg`,
-                import.meta.url,
-              ).href;
-              if (src === href) {
-                continue outer;
-              }
-            }
-          } else if (record.attributeName in catMeta) {
-            const key = record.attributeName as keyof typeof catMeta;
-            if (catMeta[key].toString() === catElement.getAttribute(key)) {
-              continue;
-            }
-          }
-        }
-        fuck();
-      }
-    }).observe(catElement, {
-      attributes: true,
-      childList: true,
-      subtree: true,
-      characterData: true,
-    });
-  }
-
-  // anti svg mutation
-  {
-    new MutationObserver(fuck).observe(svg, {
-      attributes: true,
-      childList: true,
-      characterData: true,
-    });
-  }
-
-  // anti circle mutation
-  {
-    new MutationObserver((records) => {
-      for (const record of records) {
-        const circle = record.target as SVGCircleElement;
-
-        if (circle.tagName !== "circle") {
-          continue;
-        }
-
-        if (record.attributeName === "class") {
-          const hasClass = circle.classList.contains("obstacle");
-          const isObstacle = board.isObstacle(
-            Position.fromString(circle.dataset.coords!),
-          );
-          if (hasClass !== isObstacle) {
-            fuck();
-          }
-          for (const c of circle.classList.values()) {
-            if (c !== "obstacle") {
-              fuck();
-            }
-          }
-          continue;
-        }
-        fuck();
-      }
-    }).observe(svg, {
-      attributes: true,
-      childList: true,
-      characterData: true,
-      subtree: true,
-    });
-  }
 }
