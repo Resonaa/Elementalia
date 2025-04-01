@@ -1,5 +1,7 @@
 import "./style.css";
 
+import confetti from "canvas-confetti";
+
 import { Board } from "./board";
 import { Position } from "./position";
 import { Cat } from "./cat";
@@ -13,12 +15,10 @@ const cat = new Cat();
 
 let gameActive = true;
 
-const svg = document.querySelector("svg") as HTMLOrSVGElement as SVGElement;
-const message = document.getElementById("message") as HTMLDivElement;
-const resetBtn = document.getElementById("reset") as HTMLButtonElement;
-const catElement = document.querySelector(
-  "image",
-) as HTMLOrSVGImageElement as SVGImageElement;
+const svg = document.querySelector("svg")!;
+const message = document.getElementById("message")!;
+const resetBtn = document.getElementById("reset")!;
+const catElement = document.querySelector("image")!;
 
 updateViewBox();
 initEventListeners();
@@ -26,10 +26,10 @@ generateHexGrid();
 resetGame();
 
 function updateViewBox() {
-  const right = new Position(DEPTH, 0).pixelize();
-  const left = new Position(-DEPTH, 0).pixelize();
-  const topLeft = new Position(0, -DEPTH).pixelize();
-  const bottomRight = new Position(0, DEPTH).pixelize();
+  const right = new Position(board.depth, 0).pixelize();
+  const left = new Position(-board.depth, 0).pixelize();
+  const topLeft = new Position(0, -board.depth).pixelize();
+  const bottomRight = new Position(0, board.depth).pixelize();
   const x = left.q - 1;
   const y = topLeft.r - 1;
   const w = right.q - x + 1;
@@ -39,8 +39,8 @@ function updateViewBox() {
 }
 
 function generateHexGrid() {
-  for (let q = -DEPTH; q <= DEPTH; q++) {
-    for (let r = -DEPTH; r <= DEPTH; r++) {
+  for (let q = -board.depth; q <= board.depth; q++) {
+    for (let r = -board.depth; r <= board.depth; r++) {
       const pos = new Position(q, r);
       if (!board.checkPos(pos)) {
         continue;
@@ -116,18 +116,19 @@ function getCatHref() {
   return new URL(`/static/${cat.dir}.svg`, import.meta.url).href;
 }
 
-function animateCatMove(move: Position) {
-  cat.pos = cat.pos.add(move);
+function animateCatMove(dir: keyof typeof Directions) {
+  cat.dir = dir;
+  cat.pos = cat.pos.add(Directions[dir]);
   placeCat();
 }
 
 function animateCatEscape() {
   for (let i = 0; i < 10; i++) {
-    animateCatMove(Directions[cat.dir]);
+    animateCatMove(cat.dir);
   }
 }
 
-function handleClick(e: MouseEvent) {
+function handleClick(e: PointerEvent) {
   if (!gameActive) {
     return resetGame();
   }
@@ -150,11 +151,15 @@ function handleClick(e: MouseEvent) {
   if (board.ifPlayerWins(cat.pos)) {
     message.textContent = "您赢了！";
     gameActive = false;
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      disableForReducedMotion: true,
+    });
     return;
   }
 
-  const nextMove = cat.step(board);
-  animateCatMove(nextMove);
+  animateCatMove(cat.step(board)!);
 
   if (board.ifCatWins(cat.pos)) {
     message.textContent = "小猫逃走了！";

@@ -10,11 +10,13 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@types/canvas-confetti": "^1.9.0",
     "@types/lodash": "^4.17.16",
     "typescript": "~5.7.3",
     "vite": "^6.2.4"
   },
   "dependencies": {
+    "canvas-confetti": "^1.9.3",
     "lodash": "^4.17.21"
   }
 }

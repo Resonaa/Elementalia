@@ -1,7 +1,7 @@
+import random from "lodash/random";
+
 import { Directions } from "./direction";
 import { Position } from "./position";
-import random from "lodash/random";
-import shuffle from "lodash/shuffle";
 
 export class Board {
   obstacles = new Set<string>();
@@ -19,18 +19,14 @@ export class Board {
     return this.obstacles.add(pos.toString());
   }
 
-  checkPos({ q, r }: Position) {
-    return Math.max(Math.abs(q), Math.abs(r), Math.abs(q + r)) <= this.depth;
+  checkPos(pos: Position) {
+    return pos.dist(new Position()) <= this.depth;
   }
 
-  neighbors(pos: Position, needRandom = false) {
+  neighbors(pos: Position) {
     const ans = [];
-    let dirs = Object.values(Directions);
-    if (needRandom) {
-      dirs = shuffle(dirs);
-    }
 
-    for (const dir of dirs) {
+    for (const dir of Object.values(Directions)) {
       const newPos = pos.add(dir);
       if (this.checkPos(newPos) && !this.isObstacle(newPos)) {
         ans.push(newPos);
@@ -40,7 +36,7 @@ export class Board {
   }
 
   ifPlayerWins(catPos: Position) {
-    const vis = new Set();
+    const vis = new Set([catPos.toString()]);
     const q = [catPos];
 
     while (q.length > 0) {
@@ -60,12 +56,8 @@ export class Board {
     return true;
   }
 
-  ifCatWins({ q, r }: Position) {
-    return (
-      Math.abs(q) === this.depth ||
-      Math.abs(r) === this.depth ||
-      Math.abs(q + r) === this.depth
-    );
+  ifCatWins(pos: Position) {
+    return pos.dist(new Position()) === this.depth;
   }
 
   reset(obstacleCount: number) {

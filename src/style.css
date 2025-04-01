@@ -5,11 +5,6 @@
   --obstacle-color: #003366;
 }
 
-* {
-  transition-timing-function: ease;
-  transition-duration: 0.2s;
-}
-
 @media (prefers-color-scheme: dark) {
   :root {
     --bg-color: black;
@@ -20,6 +15,13 @@
 
   image {
     filter: invert(1);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  * {
+    transition-timing-function: ease;
+    transition-duration: 0.2s;
   }
 }
 

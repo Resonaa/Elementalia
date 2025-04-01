@@ -2,6 +2,10 @@ export class Position {
   q: number;
   r: number;
 
+  get s() {
+    return -(this.q + this.r);
+  }
+
   constructor(q: number = 0, r: number = 0) {
     this.q = q;
     this.r = r;
@@ -39,6 +43,14 @@ export class Position {
 
   toArray() {
     return [this.q, this.r];
+  }
+
+  dist(other: Position) {
+    return Math.max(
+      Math.abs(this.q - other.q),
+      Math.abs(this.r - other.r),
+      Math.abs(this.s - other.s),
+    );
   }
 
   static fromString(s: string) {

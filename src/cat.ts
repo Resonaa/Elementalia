@@ -1,4 +1,5 @@
 import sample from "lodash/sample";
+import shuffle from "lodash/shuffle";
 
 import { Board } from "./board";
 import { Directions } from "./direction";
@@ -14,41 +15,11 @@ export class Cat {
   pos = new Position();
   dir: keyof typeof Directions = "bottom_left";
 
-  distCache = new Map();
-
-  getDist(board: Board, from: Position, to: Position) {
-    const cacheKey = `${board.depth}:${from},${to}`;
-    if (this.distCache.has(cacheKey)) {
-      return this.distCache.get(cacheKey);
-    }
-
-    const vis = new Set();
-    const q = [{ pos: from, dist: 0 }];
-
-    while (q.length > 0) {
-      const cur = q.splice(0, 1)[0];
-      if (cur.pos.eq(to)) {
-        this.distCache.set(cacheKey, cur.dist);
-        return cur.dist;
-      }
-
-      for (const dir of Object.values(Directions)) {
-        const newPos = cur.pos.add(dir);
-        if (board.checkPos(newPos) && !vis.has(newPos.toString())) {
-          vis.add(newPos.toString());
-          q.push({ pos: newPos, dist: cur.dist + 1 });
-        }
-      }
-    }
-
-    throw new Error("unaccessible dist target");
-  }
-
   getPossibleTargets(board: Board) {
     const targets = new Map<string, Target>();
 
     for (let i = 0; i < 3; i++) {
-      const vis = new Set();
+      const vis = new Set([this.pos.toString()]);
       const q = [{ pos: this.pos, dist: 0, next: this.pos }];
 
       while (q.length > 0) {
@@ -59,7 +30,7 @@ export class Cat {
           continue;
         }
 
-        for (const newPos of board.neighbors(cur.pos, true)) {
+        for (const newPos of board.neighbors(cur.pos)) {
           if (!vis.has(newPos.toString())) {
             vis.add(newPos.toString());
             q.push({
@@ -85,7 +56,7 @@ export class Cat {
       minDist = Math.min(minDist, target.dist);
     }
 
-    for (const target of targets.values()) {
+    for (const target of shuffle(Array.from(targets.values()))) {
       let score =
         target.dist === 1
           ? Number.MIN_SAFE_INTEGER
@@ -93,7 +64,7 @@ export class Cat {
 
       for (const obstacleString of board.obstacles.keys()) {
         const obstaclePos = Position.fromString(obstacleString);
-        const dist = this.getDist(board, target.pos, obstaclePos);
+        const dist = target.pos.dist(obstaclePos);
         score += board.depth / dist ** 2;
       }
 
@@ -111,12 +82,9 @@ export class Cat {
 
     for (const [dir, dirV] of Object.entries(Directions)) {
       if (dirV.eq(move)) {
-        this.dir = dir as keyof typeof Directions;
-        break;
+        return dir as keyof typeof Directions;
       }
     }
-
-    return Directions[this.dir];
   }
 
   reset() {
