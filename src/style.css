@@ -60,7 +60,12 @@ circle.obstacle {
   cursor: unset;
 }
 
-#reset {
+#left {
+  display: flex;
+  gap: 2rem;
+}
+
+#left > div {
   cursor: pointer;
 }
 

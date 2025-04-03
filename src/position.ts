@@ -45,7 +45,7 @@ export class Position {
     return [this.q, this.r];
   }
 
-  dist(other: Position) {
+  dist(other = new Position()) {
     return Math.max(
       Math.abs(this.q - other.q),
       Math.abs(this.r - other.r),

@@ -5,11 +5,7 @@ import { Position } from "./position";
 
 export class Board {
   obstacles = new Set<string>();
-  depth;
-
-  constructor(depth: number) {
-    this.depth = depth;
-  }
+  depth = 0;
 
   isObstacle(pos: Position) {
     return this.obstacles.has(pos.toString());
@@ -20,7 +16,7 @@ export class Board {
   }
 
   checkPos(pos: Position) {
-    return pos.dist(new Position()) <= this.depth;
+    return pos.dist() <= this.depth;
   }
 
   neighbors(pos: Position) {
@@ -57,7 +53,7 @@ export class Board {
   }
 
   ifCatWins(pos: Position) {
-    return pos.dist(new Position()) === this.depth;
+    return pos.dist() === this.depth;
   }
 
   reset(obstacleCount: number) {
@@ -67,7 +63,7 @@ export class Board {
       const q = random(-this.depth, this.depth),
         r = random(-this.depth, this.depth);
       const pos = new Position(q, r);
-      if (!this.checkPos(pos) || (q === 0 && r === 0)) {
+      if (!this.checkPos(pos) || (q === 0 && r === 0) || this.isObstacle(pos)) {
         continue;
       }
       this.setObstacle(pos);

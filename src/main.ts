@@ -7,10 +7,8 @@ import { Position } from "./position";
 import { Cat } from "./cat";
 import { Directions } from "./direction";
 
-const DEPTH = 7;
-const INITIAL_OBSTACLES = 4;
-
-const board = new Board(DEPTH);
+const board = new Board();
+board.depth = 7;
 const cat = new Cat();
 
 let gameActive = true;
@@ -18,11 +16,10 @@ let gameActive = true;
 const svg = document.querySelector("svg")!;
 const message = document.getElementById("message")!;
 const resetBtn = document.getElementById("reset")!;
+const difficultyBtn = document.getElementById("difficulty")!;
 const catElement = document.querySelector("image")!;
 
-updateViewBox();
 initEventListeners();
-generateHexGrid();
 resetGame();
 
 function updateViewBox() {
@@ -39,6 +36,26 @@ function updateViewBox() {
 }
 
 function generateHexGrid() {
+  const circles = document.querySelectorAll("circle");
+
+  if (circles.length === 3 * board.depth * (board.depth + 1) + 1) {
+    for (const circle of circles) {
+      const pos = Position.fromString(circle.dataset.coords!);
+      if (board.isObstacle(pos)) {
+        circle.classList.add("obstacle");
+      } else {
+        circle.classList.remove("obstacle");
+      }
+    }
+    return;
+  } else {
+    updateViewBox();
+  }
+
+  for (const circle of circles) {
+    circle.remove();
+  }
+
   for (let q = -board.depth; q <= board.depth; q++) {
     for (let r = -board.depth; r <= board.depth; r++) {
       const pos = new Position(q, r);
@@ -54,6 +71,9 @@ function generateHexGrid() {
       circle.setAttribute("cx", cx.toString());
       circle.setAttribute("cy", cy.toString());
       circle.setAttribute("r", "0.79");
+      if (board.isObstacle(pos)) {
+        circle.classList.add("obstacle");
+      }
       circle.dataset.coords = pos.toString();
 
       svg.prepend(circle);
@@ -129,6 +149,8 @@ function animateCatEscape() {
 }
 
 function handleClick(e: PointerEvent) {
+  e.preventDefault();
+
   if (!gameActive) {
     return resetGame();
   }
@@ -170,26 +192,33 @@ function handleClick(e: PointerEvent) {
 
 function resetGame() {
   cat.reset();
-  board.reset(INITIAL_OBSTACLES);
+
+  const x = Math.random();
+  const obstacleCnt = x > 0.8 ? 5 : x > 0.5 ? 4 : 3;
+  board.reset(obstacleCnt);
 
   message.textContent = "点击小圆点，围住小猫";
 
-  for (const circle of document.querySelectorAll("circle")) {
-    const pos = Position.fromString(circle.dataset.coords!);
-    if (board.isObstacle(pos)) {
-      circle.classList.add("obstacle");
-    } else {
-      circle.classList.remove("obstacle");
-    }
-  }
-
+  generateHexGrid();
   placeCat();
+
   gameActive = true;
 }
 
 function initEventListeners() {
   svg.addEventListener("pointerdown", handleClick);
-  resetBtn.addEventListener("pointerdown", resetGame);
+
+  resetBtn.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    resetGame();
+  });
+
+  difficultyBtn.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    board.depth = board.depth <= 3 ? 7 : board.depth - 1;
+    resetGame();
+  });
+
   document.addEventListener("contextmenu", (e) => {
     e.preventDefault();
     return false;
