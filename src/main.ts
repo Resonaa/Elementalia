@@ -1,6 +1,7 @@
 import "./style.css";
 
 import confetti from "canvas-confetti";
+import { gsap } from "gsap";
 
 import { Board } from "./board";
 import { Position } from "./position";
@@ -18,6 +19,8 @@ const message = document.getElementById("message")!;
 const resetBtn = document.getElementById("reset")!;
 const difficultyBtn = document.getElementById("difficulty")!;
 const catElement = document.querySelector("image")!;
+
+const tl = gsap.timeline({ paused: true });
 
 initEventListeners();
 resetGame();
@@ -124,7 +127,7 @@ function getCatPos() {
 
 function placeCat() {
   for (const [key, value] of Object.entries({
-    href: getCatHref(),
+    href: getCatHref(1),
     ...getCatPos(),
     ...getCatSize(),
   })) {
@@ -132,23 +135,69 @@ function placeCat() {
   }
 }
 
-function getCatHref() {
-  return new URL(`/static/${cat.dir}.svg`, import.meta.url).href;
+function getCatHref(frame: number) {
+  return new URL(`/static/${cat.dir}/${frame}.svg`, import.meta.url).href;
 }
 
 function animateCatMove(dir: keyof typeof Directions) {
-  cat.dir = dir;
-  cat.pos = cat.pos.add(Directions[dir]);
-  placeCat();
+  return new Promise((resolve) => {
+    if (cat.dir === dir) {
+      tl.set(catElement, {
+        attr: {
+          href: getCatHref(3),
+        },
+      });
+    } else {
+      cat.dir = dir;
+      tl.set(catElement, {
+        attr: {
+          href: getCatHref(3),
+          ...getCatPos(),
+          ...getCatSize(),
+        },
+      });
+    }
+
+    cat.pos = cat.pos.add(Directions[dir]);
+
+    const delay = 0.075;
+
+    tl.set(catElement, {
+      attr: {
+        href: getCatHref(4),
+      },
+      delay,
+    });
+
+    tl.set(catElement, {
+      attr: {
+        href: getCatHref(5),
+      },
+      delay,
+    });
+
+    tl.set(catElement, {
+      delay,
+      onComplete: () => {
+        setTimeout(() => {
+          const { x, y } = getCatPos();
+          catElement.setAttribute("href", getCatHref(1));
+          catElement.setAttribute("x", x.toString());
+          catElement.setAttribute("y", y.toString());
+          resolve(undefined);
+        }, 0);
+      },
+    });
+  });
 }
 
-function animateCatEscape() {
+async function animateCatEscape() {
   for (let i = 0; i < 10; i++) {
-    animateCatMove(cat.dir);
+    await animateCatMove(cat.dir);
   }
 }
 
-function handleClick(e: PointerEvent) {
+async function handleClick(e: PointerEvent) {
   e.preventDefault();
 
   if (!gameActive) {
@@ -176,12 +225,11 @@ function handleClick(e: PointerEvent) {
     confetti({
       particleCount: 100,
       spread: 70,
-      disableForReducedMotion: true,
     });
     return;
   }
 
-  animateCatMove(cat.step(board)!);
+  await animateCatMove(cat.step(board)!);
 
   if (board.ifCatWins(cat.pos)) {
     message.textContent = "小猫逃走了！";
@@ -191,6 +239,8 @@ function handleClick(e: PointerEvent) {
 }
 
 function resetGame() {
+  tl.clear();
+
   cat.reset();
 
   const x = Math.random();
@@ -201,6 +251,7 @@ function resetGame() {
 
   generateHexGrid();
   placeCat();
+  tl.play();
 
   gameActive = true;
 }

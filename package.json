@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "canvas-confetti": "^1.9.3",
+    "gsap": "^3.12.7",
     "lodash": "^4.17.21"
   }
 }
