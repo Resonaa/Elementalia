@@ -141,40 +141,27 @@ function getCatHref(frame: number) {
 
 function animateCatMove(dir: keyof typeof Directions) {
   return new Promise((resolve) => {
-    if (cat.dir === dir) {
-      tl.set(catElement, {
-        attr: {
-          href: getCatHref(3),
-        },
-      });
-    } else {
-      cat.dir = dir;
-      tl.set(catElement, {
-        attr: {
-          href: getCatHref(3),
-          ...getCatPos(),
-          ...getCatSize(),
-        },
-      });
-    }
+    cat.dir = dir;
+    tl.set(catElement, {
+      attr: {
+        href: getCatHref(1),
+        ...getCatPos(),
+        ...getCatSize(),
+      },
+    });
 
     cat.pos = cat.pos.add(Directions[dir]);
 
-    const delay = 0.075;
+    const delay = 0.07;
 
-    tl.set(catElement, {
-      attr: {
-        href: getCatHref(4),
-      },
-      delay,
-    });
-
-    tl.set(catElement, {
-      attr: {
-        href: getCatHref(5),
-      },
-      delay,
-    });
+    for (let frame = 2; frame <= 5; frame++) {
+      tl.set(catElement, {
+        attr: {
+          href: getCatHref(frame),
+        },
+        delay,
+      });
+    }
 
     tl.set(catElement, {
       delay,
