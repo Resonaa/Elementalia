@@ -1,5 +1,7 @@
 import { Position } from "./position";
 
+export type Dir = keyof typeof Directions;
+
 export const Directions = {
   bottom_left: new Position(-1, 1),
   left: new Position(-1, 0),
