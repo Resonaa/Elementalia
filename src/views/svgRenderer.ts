@@ -11,7 +11,7 @@ import { Renderer } from "./renderer";
 gsap.registerPlugin(TextPlugin);
 
 export class SVGRenderer extends Renderer {
-  svgElem = document.querySelector("svg")!;
+  svgElem = document.getElementById("board")!;
   messageElem = document.querySelector("header")!;
   catElem = document.querySelector("image")!;
   turnsElem = document.getElementById("turns")!;
@@ -195,7 +195,7 @@ export class SVGRenderer extends Renderer {
   }
 
   private getCatHref(catDir: Dir, frame: number) {
-    return new URL(`/static/${catDir}/${frame}.svg`, import.meta.url).href;
+    return new URL(`/src/static/${catDir}/${frame}.svg`, import.meta.url).href;
   }
 
   private animateCatMove(catPos: Pos, catDir: Dir) {

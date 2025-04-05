@@ -1,8 +1,10 @@
 import type { State } from "../core/state";
 import type { RendererEvents } from "../events/rendererEvents";
 
+type Listener = (e: RendererEvents) => void;
+
 export abstract class Renderer {
-  private _listeners = new Map<RendererEvents["type"], (e: any) => void>();
+  private _listeners = new Map<RendererEvents["type"], Listener>();
 
   render(_state: State) {}
 
@@ -10,7 +12,7 @@ export abstract class Renderer {
     type: T,
     listener: (e: E) => void,
   ) {
-    this._listeners.set(type, listener);
+    this._listeners.set(type, listener as Listener);
   }
 
   dispatch<E extends RendererEvents>(e: E) {
