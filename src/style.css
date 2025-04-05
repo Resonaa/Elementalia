@@ -34,7 +34,7 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 70vh;
+  height: 75vh;
   gap: 1rem;
 }
 
