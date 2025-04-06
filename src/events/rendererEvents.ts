@@ -1,4 +1,4 @@
-import { Pos } from "../models/pos";
+import type { Pos } from "../models/pos";
 
 export type RendererEvents =
   | {

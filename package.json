@@ -7,9 +7,11 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "format": "biome check --write"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
     "@types/canvas-confetti": "^1.9.0",
     "@types/lodash": "^4.17.16",
     "typescript": "~5.7.3",

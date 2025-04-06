@@ -2,8 +2,10 @@ import confetti from "canvas-confetti";
 import { gsap } from "gsap";
 import { TextPlugin } from "gsap/TextPlugin";
 
-import type { State } from "../core/state";
 import { Pos } from "../models/pos";
+
+import type { State } from "../core/state";
+
 import { type Dir, Dirs } from "../models/dir";
 
 import { Renderer } from "./renderer";
@@ -11,12 +13,12 @@ import { Renderer } from "./renderer";
 gsap.registerPlugin(TextPlugin);
 
 export class SVGRenderer extends Renderer {
-  svgElem = document.getElementById("board")!;
-  messageElem = document.querySelector("header")!;
-  catElem = document.querySelector("image")!;
-  turnsElem = document.getElementById("turns")!;
-  resetBtn = document.getElementById("reset")!;
-  difficultyBtn = document.getElementById("difficulty")!;
+  svgElem = document.querySelector("svg") as SVGSVGElement;
+  messageElem = document.querySelector("header") as HTMLElement;
+  catElem = document.querySelector("image") as SVGImageElement;
+  turnsElem = document.getElementById("turns") as HTMLDivElement;
+  resetBtn = document.getElementById("reset") as HTMLDivElement;
+  difficultyBtn = document.getElementById("difficulty") as HTMLDivElement;
 
   tl = gsap.timeline({ paused: true });
 
@@ -30,7 +32,7 @@ export class SVGRenderer extends Renderer {
   }
 
   private setupEventListeners() {
-    this.svgElem.addEventListener("pointerdown", (e) => {
+    this.svgElem.addEventListener("pointerdown", e => {
       e.preventDefault();
 
       const circle = e.target as SVGCircleElement;
@@ -42,22 +44,22 @@ export class SVGRenderer extends Renderer {
       this.dispatch({ type: "boardClick", pos });
     });
 
-    this.resetBtn.addEventListener("pointerdown", (e) => {
+    this.resetBtn.addEventListener("pointerdown", e => {
       e.preventDefault();
       this.dispatch({ type: "resetClick" });
     });
 
-    this.difficultyBtn.addEventListener("pointerdown", (e) => {
+    this.difficultyBtn.addEventListener("pointerdown", e => {
       e.preventDefault();
       this.dispatch({ type: "difficultyClick" });
     });
 
-    document.addEventListener("contextmenu", (e) => {
+    document.addEventListener("contextmenu", e => {
       e.preventDefault();
       return false;
     });
 
-    window.addEventListener("beforeunload", (e) => {
+    window.addEventListener("beforeunload", e => {
       e.preventDefault();
       e.returnValue = "";
       return "";
@@ -77,7 +79,7 @@ export class SVGRenderer extends Renderer {
 
     gsap.to(this.svgElem, {
       attr: { viewBox: `${x} ${y} ${w} ${h}` },
-      ease: "power3.out",
+      ease: "power3.out"
     });
   }
 
@@ -96,11 +98,11 @@ export class SVGRenderer extends Renderer {
         const { q: cx, r: cy } = pos.pixelize();
         const circle = document.createElementNS(
           "http://www.w3.org/2000/svg",
-          "circle",
+          "circle"
         );
 
         gsap.set(circle, {
-          attr: { cx, cy, r: 0.79 },
+          attr: { cx, cy, r: 0.79 }
         });
         circle.dataset.coords = pos.toString();
         this.svgElem.prepend(circle);
@@ -111,7 +113,12 @@ export class SVGRenderer extends Renderer {
   private updateCircles(state: State) {
     let newObstacle = new Pos();
     for (const circle of this.circleElems) {
-      const pos = Pos.fromString(circle.dataset.coords!);
+      const coords = circle.dataset.coords;
+      if (!coords) {
+        continue;
+      }
+
+      const pos = Pos.fromString(coords);
 
       const stateOb = state.board.isObstacle(pos);
       const circleOb = circle.classList.contains("obstacle");
@@ -130,9 +137,9 @@ export class SVGRenderer extends Renderer {
       text: {
         value,
         type: "diff",
-        speed: 2,
+        speed: 2
       },
-      overwrite: true,
+      overwrite: true
     });
   }
 
@@ -141,18 +148,17 @@ export class SVGRenderer extends Renderer {
       text: {
         value: turns === 0 ? "" : `${turns}回合`,
         type: "diff",
-        speed: 2,
+        speed: 2
       },
-      overwrite: true,
+      overwrite: true
     });
   }
 
   private getCatSize(catDir: Dir) {
     if (catDir.includes("top") || catDir.includes("bottom")) {
       return { width: 2, height: 2.8 };
-    } else {
-      return { width: 3.42, height: 1.8 };
     }
+    return { width: 3.42, height: 1.8 };
   }
 
   private getCatPos(catPos: Pos, catDir: Dir) {
@@ -186,7 +192,7 @@ export class SVGRenderer extends Renderer {
     const attr = {
       href: this.getCatHref(state.catDir, 1),
       ...this.getCatPos(state.catPos, state.catDir),
-      ...this.getCatSize(state.catDir),
+      ...this.getCatSize(state.catDir)
     };
 
     for (const key in attr) {
@@ -199,15 +205,15 @@ export class SVGRenderer extends Renderer {
   }
 
   private animateCatMove(catPos: Pos, catDir: Dir) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const oldCatPos = catPos.sub(Dirs[catDir]);
 
       this.tl.set(this.catElem, {
         attr: {
           href: this.getCatHref(catDir, 1),
           ...this.getCatPos(oldCatPos, catDir),
-          ...this.getCatSize(catDir),
-        },
+          ...this.getCatSize(catDir)
+        }
       });
 
       const delay = 0.07;
@@ -215,9 +221,9 @@ export class SVGRenderer extends Renderer {
       for (let frame = 2; frame <= 5; frame++) {
         this.tl.set(this.catElem, {
           attr: {
-            href: this.getCatHref(catDir, frame),
+            href: this.getCatHref(catDir, frame)
           },
-          delay,
+          delay
         });
       }
 
@@ -230,7 +236,7 @@ export class SVGRenderer extends Renderer {
             this.catElem.setAttribute("y", y.toString());
             resolve(true);
           }, 0);
-        },
+        }
       });
     });
   }
@@ -247,7 +253,7 @@ export class SVGRenderer extends Renderer {
   private confetti() {
     confetti({
       particleCount: 100,
-      spread: 70,
+      spread: 70
     });
   }
 

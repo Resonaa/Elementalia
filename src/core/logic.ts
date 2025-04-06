@@ -1,8 +1,8 @@
 import random from "lodash/random";
 import sample from "lodash/sample";
 
+import { type Dir, Dirs } from "../models/dir";
 import { Pos } from "../models/pos";
-import { Dirs, type Dir } from "../models/dir";
 
 import { step } from "./cat";
 import type { State } from "./state";
@@ -80,7 +80,7 @@ export class Logic {
     const additionalObstacles = x > 0.8 ? 1 : x > 0.5 ? 0 : -1;
     const obstacleCnt = Math.max(
       additionalObstacles + this._state.config.initialObstacles,
-      0,
+      0
     );
 
     for (let i = 0; i < obstacleCnt; ) {

@@ -33,7 +33,7 @@ export function step(state: State) {
             q.push({
               pos: newPos,
               dist: cur.dist + 1,
-              next: cur.dist === 0 ? newPos : cur.next,
+              next: cur.dist === 0 ? newPos : cur.next
             });
           }
         }

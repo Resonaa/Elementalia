@@ -1,4 +1,4 @@
-import { Renderer } from "../views/renderer";
+import type { Renderer } from "../views/renderer";
 
 import type { IConfig } from "./config";
 import { Logic } from "./logic";
@@ -10,7 +10,7 @@ export class Controller {
 
   constructor(
     config: IConfig,
-    private _renderer: Renderer,
+    private _renderer: Renderer
   ) {
     this._state = new State(config);
     this._logic = new Logic(this._state);

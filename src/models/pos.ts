@@ -4,8 +4,8 @@ export class Pos {
   }
 
   constructor(
-    public q: number = 0,
-    public r: number = 0,
+    public q = 0,
+    public r = 0
   ) {}
 
   set(q: number, r: number) {
@@ -38,12 +38,12 @@ export class Pos {
     return Math.max(
       Math.abs(this.q - other.q),
       Math.abs(this.r - other.r),
-      Math.abs(this.s - other.s),
+      Math.abs(this.s - other.s)
     );
   }
 
   static fromString(s: string) {
     const [q, r] = s.split(",");
-    return new Pos(parseInt(q), parseInt(r));
+    return new Pos(Number.parseInt(q), Number.parseInt(r));
   }
 }
