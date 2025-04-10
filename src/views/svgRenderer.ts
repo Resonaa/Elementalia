@@ -203,7 +203,16 @@ export class SVGRenderer extends Renderer {
   }
 
   private getCatHref(catDir: Dir, frame: number) {
-    return new URL(`/src/static/${catDir}/${frame}.svg`, import.meta.url).href;
+    let href = new URL(
+      `/src/static/${catDir.replace("right", "left")}/${frame}.svg?inline`,
+      import.meta.url
+    ).href;
+
+    if (catDir.includes("right")) {
+      href = href.replace("xmlns", "transform='scale(-1 1)' xmlns");
+    }
+
+    return href;
   }
 
   private animateCatMove(catPos: Pos, catDir: Dir) {
