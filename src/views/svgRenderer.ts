@@ -54,16 +54,18 @@ export class SVGRenderer extends Renderer {
       this.dispatch({ type: "difficultyClick" });
     });
 
-    document.addEventListener("contextmenu", e => {
-      e.preventDefault();
-      return false;
-    });
+    if (import.meta.env.MODE === "production") {
+      document.addEventListener("contextmenu", e => {
+        e.preventDefault();
+        return false;
+      });
 
-    window.addEventListener("beforeunload", e => {
-      e.preventDefault();
-      e.returnValue = "";
-      return "";
-    });
+      window.addEventListener("beforeunload", e => {
+        e.preventDefault();
+        e.returnValue = "";
+        return "";
+      });
+    }
   }
 
   private updateViewBox(state: State) {
