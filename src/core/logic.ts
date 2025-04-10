@@ -4,7 +4,6 @@ import sample from "lodash/sample";
 import { type Dir, Dirs } from "../models/dir";
 import { Pos } from "../models/pos";
 
-import { step } from "./cat";
 import type { State } from "./state";
 
 export class Logic {
@@ -25,19 +24,17 @@ export class Logic {
   }
 
   catMove() {
-    const move = step(this._state);
+    const moves = this._state.cats[this._state.currentCatId].step(this._state);
 
-    if (!move) {
-      return;
-    }
-
-    const newPos = this._state.catPos.add(Dirs[move]);
-    if (
-      this._state.board.checkPos(newPos) &&
-      !this._state.board.isObstacle(newPos)
-    ) {
-      this._state.catPos = newPos;
-      this._state.catDir = move;
+    for (const move of moves) {
+      const newPos = this._state.catPos.add(Dirs[move]);
+      if (
+        this._state.board.checkPos(newPos) &&
+        !this._state.board.isObstacle(newPos)
+      ) {
+        this._state.catPos = newPos;
+        this._state.catDir = move;
+      }
     }
   }
 
@@ -52,7 +49,10 @@ export class Logic {
       }
 
       for (const newPos of this._state.board.neighbors(cur)) {
-        if (!vis.has(newPos.toString())) {
+        if (
+          !this._state.board.isObstacle(newPos) &&
+          !vis.has(newPos.toString())
+        ) {
           vis.add(newPos.toString());
           q.push(newPos);
         }
@@ -100,6 +100,13 @@ export class Logic {
     this._state.board.depth--;
     if (this._state.board.depth < this._state.config.minDepth) {
       this._state.board.depth = this._state.config.maxDepth;
+    }
+  }
+
+  toggleCat() {
+    this._state.currentCatId++;
+    if (this._state.currentCatId >= this._state.cats.length) {
+      this._state.currentCatId = 0;
     }
   }
 }

@@ -10,4 +10,7 @@ export type RendererEvents =
     }
   | {
       type: "difficultyClick";
+    }
+  | {
+      type: "toggleCatClick";
     };

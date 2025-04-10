@@ -31,7 +31,7 @@ export class Board {
 
     for (const dir of Object.values(Dirs)) {
       const newPos = pos.add(dir);
-      if (this.checkPos(newPos) && !this.isObstacle(newPos)) {
+      if (this.checkPos(newPos)) {
         ans.push(newPos);
       }
     }

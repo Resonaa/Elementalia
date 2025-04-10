@@ -19,6 +19,7 @@ export class SVGRenderer extends Renderer {
   turnsElem = document.getElementById("turns") as HTMLDivElement;
   resetBtn = document.getElementById("reset") as HTMLDivElement;
   difficultyBtn = document.getElementById("difficulty") as HTMLDivElement;
+  toggleCatBtn = document.getElementById("cat") as HTMLDivElement;
 
   tl = gsap.timeline({ paused: true });
 
@@ -54,6 +55,11 @@ export class SVGRenderer extends Renderer {
       this.dispatch({ type: "difficultyClick" });
     });
 
+    this.toggleCatBtn.addEventListener("pointerdown", e => {
+      e.preventDefault();
+      this.dispatch({ type: "toggleCatClick" });
+    });
+
     if (import.meta.env.MODE === "production") {
       document.addEventListener("contextmenu", e => {
         e.preventDefault();
@@ -74,10 +80,10 @@ export class SVGRenderer extends Renderer {
     const topLeft = new Pos(0, -state.board.depth).pixelize();
     const bottomRight = new Pos(0, state.board.depth).pixelize();
 
-    const x = left.q - 1;
-    const y = topLeft.r - 1;
-    const w = right.q - x + 1;
-    const h = bottomRight.r - y + 1;
+    const x = left.q - 0.79;
+    const y = topLeft.r - 0.79;
+    const w = right.q - x + 0.79;
+    const h = bottomRight.r - y + 0.79;
 
     gsap.to(this.svgElem, {
       attr: { viewBox: `${x} ${y} ${w} ${h}` },
@@ -148,7 +154,7 @@ export class SVGRenderer extends Renderer {
   private updateTurns(turns: number) {
     gsap.to(this.turnsElem, {
       text: {
-        value: turns === 0 ? "" : `${turns}回合`,
+        value: turns === 0 ? "" : turns.toString(),
         type: "diff",
         speed: 2
       },
@@ -192,7 +198,11 @@ export class SVGRenderer extends Renderer {
 
   private placeCat(state: State) {
     const attr = {
-      href: this.getCatHref(state.catDir, 1),
+      href: this.getCatHref(
+        state.cats[state.currentCatId].color,
+        state.catDir,
+        1
+      ),
       ...this.getCatPos(state.catPos, state.catDir),
       ...this.getCatSize(state.catDir)
     };
@@ -202,11 +212,13 @@ export class SVGRenderer extends Renderer {
     }
   }
 
-  private getCatHref(catDir: Dir, frame: number) {
+  private getCatHref(catColor: string, catDir: Dir, frame: number) {
     let href = new URL(
       `/src/static/${catDir.replace("right", "left")}/${frame}.svg?inline`,
       import.meta.url
     ).href;
+
+    href = href.replace("cat-color", catColor);
 
     if (catDir.includes("right")) {
       href = href.replace("xmlns", "transform='scale(-1 1)' xmlns");
@@ -215,13 +227,13 @@ export class SVGRenderer extends Renderer {
     return href;
   }
 
-  private animateCatMove(catPos: Pos, catDir: Dir) {
+  private animateCatMove(catColor: string, catPos: Pos, catDir: Dir) {
     return new Promise(resolve => {
       const oldCatPos = catPos.sub(Dirs[catDir]);
 
       this.tl.set(this.catElem, {
         attr: {
-          href: this.getCatHref(catDir, 1),
+          href: this.getCatHref(catColor, catDir, 1),
           ...this.getCatPos(oldCatPos, catDir),
           ...this.getCatSize(catDir)
         }
@@ -232,7 +244,7 @@ export class SVGRenderer extends Renderer {
       for (let frame = 2; frame <= 5; frame++) {
         this.tl.set(this.catElem, {
           attr: {
-            href: this.getCatHref(catDir, frame)
+            href: this.getCatHref(catColor, catDir, frame)
           },
           delay
         });
@@ -242,7 +254,10 @@ export class SVGRenderer extends Renderer {
         onComplete: () => {
           setTimeout(() => {
             const { x, y } = this.getCatPos(catPos, catDir);
-            this.catElem.setAttribute("href", this.getCatHref(catDir, 1));
+            this.catElem.setAttribute(
+              "href",
+              this.getCatHref(catColor, catDir, 1)
+            );
             this.catElem.setAttribute("x", x.toString());
             this.catElem.setAttribute("y", y.toString());
             resolve(true);
@@ -256,7 +271,11 @@ export class SVGRenderer extends Renderer {
     let catPos = state.catPos;
     const catDir = state.catDir;
     for (let i = 0; i < 10; i++) {
-      await this.animateCatMove(catPos, catDir);
+      await this.animateCatMove(
+        state.cats[state.currentCatId].color,
+        catPos,
+        catDir
+      );
       catPos = catPos.add(Dirs[catDir]);
     }
   }
@@ -266,6 +285,14 @@ export class SVGRenderer extends Renderer {
       particleCount: 100,
       spread: 70
     });
+  }
+
+  private hideButtons() {
+    gsap.to("#difficulty, #cat", { autoAlpha: 0 });
+  }
+
+  private showButtons() {
+    gsap.to("#difficulty, #cat", { autoAlpha: 1 });
   }
 
   render(state: State) {
@@ -278,13 +305,14 @@ export class SVGRenderer extends Renderer {
       this.generateCircles(state);
     }
 
+    this.updateTurns(state.turns);
+
     const newObstacle = this.updateCircles(state);
 
     switch (state.status) {
       case "win": {
-        // player has just won the game, we should update message, confetti and show the number of used turns
+        // player has just won the game, we should update message and confetti
         this.updateMessage("您赢了！");
-        this.updateTurns(state.turns);
         this.confetti();
         break;
       }
@@ -299,14 +327,20 @@ export class SVGRenderer extends Renderer {
           // game has just been reset, we should place cat in the middle, update message,
           // clear existing animation and remove turns display
           this.tl.clear();
-          this.updateMessage("点击小圆点，围住小猫");
+          this.updateMessage(state.cats[state.currentCatId].description);
           this.updateTurns(0);
           this.placeCat(state);
           this.tl.play();
+          this.showButtons();
         } else {
           // player has clicked a circle, we should play cat move animation and update message
           this.updateMessage(`您点击了 (${newObstacle.q}, ${newObstacle.r})`);
-          this.animateCatMove(state.catPos, state.catDir);
+          this.animateCatMove(
+            state.cats[state.currentCatId].color,
+            state.catPos,
+            state.catDir
+          );
+          state.turns === 1 && this.hideButtons();
         }
         break;
       }

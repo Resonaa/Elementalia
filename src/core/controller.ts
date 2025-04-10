@@ -48,6 +48,11 @@ export class Controller {
       this._logic.reset();
       this._renderer.render(this._state);
     });
+
+    this._renderer.on("toggleCatClick", () => {
+      this._logic.toggleCat();
+      this._renderer.render(this._state);
+    });
   }
 
   start() {
