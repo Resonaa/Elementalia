@@ -1,25 +1,32 @@
+import { immerable } from "immer";
+
 import { Dirs } from "./dir";
 import { Pos } from "./pos";
 
 export class Board {
-  private _obstacles = new Set<string>();
+  readonly [immerable] = true;
 
+  obstacles: Record<string, null> = Object.create(null);
   depth = 0;
 
   isObstacle(pos: Pos) {
-    return this._obstacles.has(pos.toString());
+    return pos.toString() in this.obstacles;
   }
 
   setObstacle(pos: Pos) {
-    return this._obstacles.add(pos.toString());
+    this.obstacles[pos.toString()] = null;
+  }
+
+  unsetObstacle(pos: Pos) {
+    delete this.obstacles[pos.toString()];
   }
 
   clear() {
-    this._obstacles.clear();
+    this.obstacles = Object.create(null);
   }
 
   allObstacles() {
-    return Array.from(this._obstacles.keys()).map(Pos.fromString);
+    return Array.from(Object.keys(this.obstacles)).map(Pos.fromString);
   }
 
   checkPos(pos: Pos) {

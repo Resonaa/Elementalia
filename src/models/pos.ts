@@ -1,4 +1,8 @@
+import { immerable } from "immer";
+
 export class Pos {
+  readonly [immerable] = true;
+
   get s() {
     return -(this.q + this.r);
   }

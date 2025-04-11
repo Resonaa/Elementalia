@@ -1,22 +1,31 @@
+import { immerable } from "immer";
+
 import { Board } from "../models/board";
 import type { Dir } from "../models/dir";
 import { Pos } from "../models/pos";
-import { BlueCat } from "./cats/blueCat";
-
-import { Cat } from "./cats/cat";
-import { RedCat } from "./cats/redCat";
 
 import type { IConfig } from "./config";
 
-export class State {
-  board = new Board();
-  catPos = new Pos();
-  catDir: Dir = "bottom_left";
-  turns = 0;
-  status: "win" | "lose" | "playing" = "playing";
+import { BlueCat } from "./cats/blueCat";
+import { Cat } from "./cats/cat";
+import { GreenCat } from "./cats/greenCat";
+import { RedCat } from "./cats/redCat";
 
-  cats = [new Cat(), new RedCat(), new BlueCat()];
-  currentCatId = 0;
+const cats = [new Cat(), new RedCat(), new BlueCat(), new GreenCat()];
+
+export class State {
+  readonly [immerable] = true;
+
+  readonly board = new Board();
+  readonly catPos = new Pos();
+  readonly catDir: Dir = "bottom_left";
+  readonly turns = 0;
+  readonly status: "win" | "lose" | "playing" = "playing";
+  readonly catId = 0;
+
+  get cat() {
+    return cats[this.catId % cats.length];
+  }
 
   constructor(public readonly config: IConfig) {}
 }

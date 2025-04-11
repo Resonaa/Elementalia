@@ -1,19 +1,18 @@
+import { produce } from "immer";
 import type { Renderer } from "../views/renderer";
 
 import type { IConfig } from "./config";
-import { Logic } from "./logic";
+import * as Logic from "./logic";
 import { State } from "./state";
 
 export class Controller {
   private _state: State;
-  private _logic: Logic;
 
   constructor(
     config: IConfig,
     private _renderer: Renderer
   ) {
     this._state = new State(config);
-    this._logic = new Logic(this._state);
 
     this.setupEventListeners();
   }
@@ -23,40 +22,50 @@ export class Controller {
       if (this._state.status === "lose") {
         this._renderer.dispatch({ type: "resetClick" });
       } else if (this._state.status === "playing") {
-        if (this._logic.placeObstacle(pos)) {
-          if (this._logic.checkPlayerWin()) {
-            this._state.status = "win";
+        if (Logic.canPlaceObstacle(this._state, pos)) {
+          let newState = Logic.placeObstacle(this._state, pos);
+
+          if (Logic.checkPlayerWin(newState)) {
+            newState = produce(newState, state => {
+              state.status = "win";
+            });
           } else {
-            this._logic.catMove();
-            if (this._logic.checkCatWin()) {
-              this._state.status = "lose";
+            newState = Logic.catMove(newState);
+            if (Logic.checkCatWin(newState)) {
+              newState = produce(newState, state => {
+                state.status = "lose";
+              });
             }
           }
 
-          this._renderer.render(this._state);
+          this._renderer.render(newState);
+          this._state = newState;
         }
       }
     });
 
     this._renderer.on("resetClick", () => {
-      this._logic.reset();
-      this._renderer.render(this._state);
+      const state = Logic.reset(this._state);
+      this._renderer.render(state);
+      this._state = state;
     });
 
     this._renderer.on("difficultyClick", () => {
-      this._logic.toggleDifficulty();
-      this._logic.reset();
-      this._renderer.render(this._state);
+      const state = Logic.reset(Logic.toggleDifficulty(this._state));
+      this._renderer.render(state);
+      this._state = state;
     });
 
     this._renderer.on("toggleCatClick", () => {
-      this._logic.toggleCat();
-      this._renderer.render(this._state);
+      const state = Logic.toggleCat(this._state);
+      this._renderer.render(state);
+      this._state = state;
     });
   }
 
   start() {
-    this._logic.reset();
-    this._renderer.render(this._state);
+    const state = Logic.reset(this._state);
+    this._renderer.render(state);
+    this._state = state;
   }
 }

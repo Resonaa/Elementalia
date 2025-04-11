@@ -8,6 +8,8 @@ export class Cat {
   color = "black";
   description = "点击小圆点，围住小猫";
 
+  reset() {}
+
   step(state: State) {
     interface Target {
       pos: Pos;

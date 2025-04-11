@@ -6,8 +6,8 @@ export const Dirs = {
   bottom_left: new Pos(-1, 1),
   left: new Pos(-1, 0),
   top_left: new Pos(0, -1),
-  right: new Pos(1, 0),
   top_right: new Pos(1, -1),
+  right: new Pos(1, 0),
   bottom_right: new Pos(0, 1)
 };
 

@@ -1,112 +1,114 @@
 import random from "lodash/random";
 import sample from "lodash/sample";
 
+import { produce } from "immer";
 import { type Dir, Dirs } from "../models/dir";
 import { Pos } from "../models/pos";
-
 import type { State } from "./state";
 
-export class Logic {
-  constructor(private _state: State) {}
+export function canPlaceObstacle(state: State, pos: Pos) {
+  return (
+    state.board.checkPos(pos) &&
+    !state.board.isObstacle(pos) &&
+    !state.catPos.eq(pos)
+  );
+}
 
-  placeObstacle(pos: Pos) {
-    const canPlace =
-      this._state.board.checkPos(pos) &&
-      !this._state.board.isObstacle(pos) &&
-      !this._state.catPos.eq(pos);
+export function placeObstacle(state: State, pos: Pos) {
+  return produce(state, state => {
+    state.board.setObstacle(pos);
+    state.turns++;
+  });
+}
 
-    if (canPlace) {
-      this._state.board.setObstacle(pos);
-      this._state.turns++;
-    }
-
-    return canPlace;
-  }
-
-  catMove() {
-    const moves = this._state.cats[this._state.currentCatId].step(this._state);
+export function catMove(state: State) {
+  return produce(state, state => {
+    const cat = state.cat;
+    const moves = cat.step(state);
 
     for (const move of moves) {
-      const newPos = this._state.catPos.add(Dirs[move]);
-      if (
-        this._state.board.checkPos(newPos) &&
-        !this._state.board.isObstacle(newPos)
-      ) {
-        this._state.catPos = newPos;
-        this._state.catDir = move;
+      const newPos = state.catPos.add(Dirs[move]);
+      if (state.board.checkPos(newPos) && !state.board.isObstacle(newPos)) {
+        state.catPos = newPos;
+        state.catDir = move;
+      }
+    }
+  });
+}
+
+export function checkPlayerWin(state: State) {
+  const vis = new Set([state.catPos.toString()]);
+  const q = [state.catPos];
+
+  while (q.length > 0) {
+    const cur = q.splice(0, 1)[0];
+    if (checkCatWin(state, cur)) {
+      return false;
+    }
+
+    for (const newPos of state.board.neighbors(cur)) {
+      if (!state.board.isObstacle(newPos) && !vis.has(newPos.toString())) {
+        vis.add(newPos.toString());
+        q.push(newPos);
       }
     }
   }
 
-  checkPlayerWin() {
-    const vis = new Set([this._state.catPos.toString()]);
-    const q = [this._state.catPos];
+  return true;
+}
 
-    while (q.length > 0) {
-      const cur = q.splice(0, 1)[0];
-      if (this.checkCatWin(cur)) {
-        return false;
-      }
+export function checkCatWin(state: State, catPos = state.catPos) {
+  return catPos.dist() === state.board.depth;
+}
 
-      for (const newPos of this._state.board.neighbors(cur)) {
-        if (
-          !this._state.board.isObstacle(newPos) &&
-          !vis.has(newPos.toString())
-        ) {
-          vis.add(newPos.toString());
-          q.push(newPos);
-        }
-      }
-    }
+export function reset(state: State) {
+  return produce(state, state => {
+    state.board.clear();
 
-    return true;
-  }
+    state.catPos.set(0, 0);
+    state.catDir = sample(Object.keys(Dirs)) as Dir;
 
-  checkCatWin(catPos = this._state.catPos) {
-    return catPos.dist() === this._state.board.depth;
-  }
+    state.cat.reset();
 
-  reset() {
-    this._state.board.clear();
-
-    this._state.catPos.set(0, 0);
-    this._state.catDir = sample(Object.keys(Dirs)) as Dir;
-
-    if (this._state.board.depth <= 0) {
-      this._state.board.depth = this._state.config.maxDepth;
+    if (state.board.depth <= 0) {
+      state.board.depth = state.config.maxDepth;
     }
 
     const x = Math.random();
     const additionalObstacles = x > 0.8 ? 1 : x > 0.5 ? 0 : -1;
     const obstacleCnt = Math.max(
-      additionalObstacles + this._state.config.initialObstacles,
+      additionalObstacles + state.config.initialObstacles,
       0
     );
 
     for (let i = 0; i < obstacleCnt; ) {
-      const q = random(-this._state.board.depth, this._state.board.depth);
-      const r = random(-this._state.board.depth, this._state.board.depth);
+      const q = random(-state.board.depth, state.board.depth);
+      const r = random(-state.board.depth, state.board.depth);
 
       const pos = new Pos(q, r);
 
-      this.placeObstacle(pos) && i++;
+      if (canPlaceObstacle(state, pos)) {
+        state.board.setObstacle(pos);
+        i++;
+      }
     }
 
-    this._state.turns = 0;
-    this._state.status = "playing";
-  }
+    state.turns = 0;
+    state.status = "playing";
+  });
+}
 
-  toggleDifficulty() {
-    this._state.board.depth--;
-    if (this._state.board.depth < this._state.config.minDepth) {
-      this._state.board.depth = this._state.config.maxDepth;
+export function toggleDifficulty(state: State) {
+  return produce(state, state => {
+    state.board.depth--;
+    if (state.board.depth < state.config.minDepth) {
+      state.board.depth = state.config.maxDepth;
     }
-  }
+  });
+}
 
-  toggleCat() {
-    this._state.currentCatId++;
-    if (this._state.currentCatId >= this._state.cats.length) {
-      this._state.currentCatId = 0;
-    }
-  }
+export function toggleCat(state: State) {
+  return produce(state, state => {
+    state.catId++;
+  });
 }
