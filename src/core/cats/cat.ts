@@ -6,7 +6,7 @@ import type { State } from "../state";
 
 export class Cat {
   color = "black";
-  description = "点击小圆点，围住小猫";
+  name = "小猫";
 
   reset() {}
 

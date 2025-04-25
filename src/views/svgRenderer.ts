@@ -120,7 +120,7 @@ export class SVGRenderer extends Renderer {
   }
 
   private updateCircles(state: State) {
-    let newObstacle = new Pos();
+    let newObstacle: Pos | null = null;
     for (const circle of this.circleElems) {
       const coords = circle.dataset.coords;
       if (!coords) {
@@ -314,7 +314,7 @@ export class SVGRenderer extends Renderer {
       }
       case "lose": {
         // player has lost, we should play cat escape animation and update message
-        this.updateMessage("小猫逃走了！");
+        this.updateMessage(`${state.cat.name}逃走了！`);
         this.animateCatEscape(state);
         break;
       }
@@ -323,13 +323,14 @@ export class SVGRenderer extends Renderer {
           // game has just been reset, we should place cat in the middle, update message,
           // clear existing animation and remove turns display
           this.tl.clear();
-          this.updateMessage(state.cat.description);
+          this.updateMessage(`点击小圆点，围住${state.cat.name}`);
           this.placeCat(state);
           this.showButtons();
           this.tl.play();
         } else {
           // player has clicked a circle, we should play cat move animation and update message
-          this.updateMessage(`您点击了 (${newObstacle.q}, ${newObstacle.r})`);
+          newObstacle &&
+            this.updateMessage(`您点击了 (${newObstacle.q}, ${newObstacle.r})`);
           this.animateCatMove(state);
           state.turns === 1 && this.hideButtons();
         }

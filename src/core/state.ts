@@ -8,10 +8,21 @@ import type { IConfig } from "./config";
 
 import { BlueCat } from "./cats/blueCat";
 import { Cat } from "./cats/cat";
+import { CyanCat } from "./cats/cyanCat";
 import { GreenCat } from "./cats/greenCat";
+import { OrangeCat } from "./cats/orangeCat";
+import { PinkCat } from "./cats/pinkCat";
 import { RedCat } from "./cats/redCat";
 
-const cats = [new Cat(), new RedCat(), new BlueCat(), new GreenCat()];
+const cats = [
+  new Cat(),
+  new RedCat(),
+  new BlueCat(),
+  new GreenCat(),
+  new CyanCat(),
+  new OrangeCat(),
+  new PinkCat()
+];
 
 export class State {
   readonly [immerable] = true;

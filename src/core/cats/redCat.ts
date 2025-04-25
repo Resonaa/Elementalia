@@ -6,7 +6,7 @@ import type { State } from "../state";
 import { Cat } from "./cat";
 
 export class RedCat extends Cat {
-  description = "每8回合额外移动一步";
+  name = "红猫";
   color = "red";
 
   step(state: State) {

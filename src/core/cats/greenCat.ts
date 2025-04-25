@@ -4,7 +4,7 @@ import type { State } from "../state";
 import { Cat } from "./cat";
 
 export class GreenCat extends Cat {
-  description = "移动后击退前方障碍";
+  name = "绿猫";
   color = "#008000";
 
   step(state: State) {

@@ -6,7 +6,7 @@ import type { State } from "../state";
 import { Cat } from "./cat";
 
 export class BlueCat extends Cat {
-  description = "周围存在至少3个障碍时，移动速度加倍";
+  name = "蓝猫";
   color = "blue";
 
   step(state: State) {
