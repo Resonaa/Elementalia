@@ -8,6 +8,8 @@ import { Cat } from "./cat";
 export class RedCat extends Cat {
   name = "红猫";
   color = "red";
+  description = "每8回合额外移动一步";
+  difficulty = 1;
 
   step(state: State) {
     if (state.turns % 8 === 0) {

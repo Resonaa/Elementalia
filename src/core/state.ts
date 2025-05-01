@@ -10,8 +10,10 @@ import { BlueCat } from "./cats/blueCat";
 import { Cat } from "./cats/cat";
 import { CyanCat } from "./cats/cyanCat";
 import { GreenCat } from "./cats/greenCat";
+import { MaroonCat } from "./cats/maroonCat";
 import { OrangeCat } from "./cats/orangeCat";
 import { PinkCat } from "./cats/pinkCat";
+import { PurpleCat } from "./cats/purpleCat";
 import { RedCat } from "./cats/redCat";
 
 const cats = [
@@ -21,7 +23,9 @@ const cats = [
   new GreenCat(),
   new CyanCat(),
   new OrangeCat(),
-  new PinkCat()
+  new PinkCat(),
+  new PurpleCat(),
+  new MaroonCat()
 ];
 
 export class State {

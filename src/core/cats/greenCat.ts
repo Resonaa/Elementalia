@@ -6,6 +6,8 @@ import { Cat } from "./cat";
 export class GreenCat extends Cat {
   name = "绿猫";
   color = "#008000";
+  description = "移动后击退前方障碍";
+  difficulty = 1;
 
   step(state: State) {
     const move = super.step(state);

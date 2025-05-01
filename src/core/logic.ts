@@ -36,31 +36,6 @@ export function catMove(state: State) {
   });
 }
 
-export function checkPlayerWin(state: State) {
-  const vis = new Set([state.catPos.toString()]);
-  const q = [state.catPos];
-
-  while (q.length > 0) {
-    const cur = q.splice(0, 1)[0];
-    if (checkCatWin(state, cur)) {
-      return false;
-    }
-
-    for (const newPos of state.board.neighbors(cur)) {
-      if (!state.board.isObstacle(newPos) && !vis.has(newPos.toString())) {
-        vis.add(newPos.toString());
-        q.push(newPos);
-      }
-    }
-  }
-
-  return true;
-}
-
-export function checkCatWin(state: State, catPos = state.catPos) {
-  return catPos.dist() === state.board.depth;
-}
-
 export function reset(state: State) {
   return produce(state, state => {
     state.board.clear();

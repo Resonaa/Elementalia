@@ -7,6 +7,8 @@ export class PinkCat extends Cat {
   name = "粉猫";
   color = "#f032e6";
   obstacles: Map<string, number> = new Map();
+  description = "障碍每回合切换状态";
+  difficulty = 2;
 
   reset() {
     this.obstacles.clear();

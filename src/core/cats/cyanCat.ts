@@ -8,6 +8,8 @@ import { Cat } from "./cat";
 export class CyanCat extends Cat {
   name = "青猫";
   color = "#008080";
+  description = "仅在偶数回合移动两步";
+  difficulty = 1;
 
   step(state: State) {
     const x = 2;

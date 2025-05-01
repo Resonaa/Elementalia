@@ -25,13 +25,13 @@ export class Controller {
         if (Logic.canPlaceObstacle(this._state, pos)) {
           let newState = Logic.placeObstacle(this._state, pos);
 
-          if (Logic.checkPlayerWin(newState)) {
+          if (newState.cat.checkPlayerWin(newState)) {
             newState = produce(newState, state => {
               state.status = "win";
             });
           } else {
             newState = Logic.catMove(newState);
-            if (Logic.checkCatWin(newState)) {
+            if (newState.cat.checkCatWin(newState)) {
               newState = produce(newState, state => {
                 state.status = "lose";
               });

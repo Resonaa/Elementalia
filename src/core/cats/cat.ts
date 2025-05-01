@@ -7,8 +7,35 @@ import type { State } from "../state";
 export class Cat {
   color = "black";
   name = "小猫";
+  description = "点击小圆点，围住小猫";
+  difficulty = 0;
 
   reset() {}
+
+  checkCatWin(state: State, cur = state.catPos) {
+    return cur.dist() === state.board.depth;
+  }
+
+  checkPlayerWin(state: State) {
+    const vis = new Set([state.catPos.toString()]);
+    const q = [state.catPos];
+
+    while (q.length > 0) {
+      const cur = q.splice(0, 1)[0];
+      if (this.checkCatWin(state, cur)) {
+        return false;
+      }
+
+      for (const newPos of state.board.neighbors(cur)) {
+        if (!state.board.isObstacle(newPos) && !vis.has(newPos.toString())) {
+          vis.add(newPos.toString());
+          q.push(newPos);
+        }
+      }
+    }
+
+    return true;
+  }
 
   step(state: State) {
     interface Target {

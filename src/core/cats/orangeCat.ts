@@ -9,6 +9,8 @@ export class OrangeCat extends Cat {
   ms = 600;
   name = "橙猫";
   color = "#fa8c01";
+  description = `玩家回合每用时${this.ms}ms，清除一个远端障碍`;
+  difficulty = 1;
 
   lastClick = Date.now();
 

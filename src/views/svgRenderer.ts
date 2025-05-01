@@ -152,10 +152,10 @@ export class SVGRenderer extends Renderer {
     });
   }
 
-  private updateTurns({ turns }: State) {
+  private updateTurns(value: string) {
     gsap.to(this.turnsElem, {
       text: {
-        value: turns.toString(),
+        value,
         type: "diff"
       },
       duration: 0.2,
@@ -266,7 +266,7 @@ export class SVGRenderer extends Renderer {
   private async animateCatEscape(_state: State) {
     let state = produce(_state, () => {});
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 20; i++) {
       await this.animateCatMove(state);
       state = produce(state, state => {
         state.catPos = state.catPos.add(Dirs[state.catDir]);
@@ -301,7 +301,7 @@ export class SVGRenderer extends Renderer {
       this.generateCircles(state);
     }
 
-    state.turns !== 0 && this.updateTurns(state);
+    state.turns !== 0 && this.updateTurns(state.turns);
 
     const newObstacle = this.updateCircles(state);
 
@@ -323,9 +323,10 @@ export class SVGRenderer extends Renderer {
           // game has just been reset, we should place cat in the middle, update message,
           // clear existing animation and remove turns display
           this.tl.clear();
-          this.updateMessage(`点击小圆点，围住${state.cat.name}`);
+          this.updateMessage(state.cat.description);
           this.placeCat(state);
           this.showButtons();
+          this.updateTurns("★".repeat(state.cat.difficulty));
           this.tl.play();
         } else {
           // player has clicked a circle, we should play cat move animation and update message
