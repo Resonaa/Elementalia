@@ -8,7 +8,13 @@ export class PurpleCat extends Cat {
   lives = 1;
   shouldModify = false;
   description = "濒死时消灭全部障碍，仅可触发1次";
-  difficulty = 2;
+  difficulty = {
+    7: 2,
+    6: 3,
+    5: 4,
+    4: 4,
+    3: 4
+  };
 
   reset() {
     this.lives = 1;

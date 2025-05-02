@@ -9,7 +9,13 @@ export class BlueCat extends Cat {
   name = "蓝猫";
   color = "blue";
   description = "周围存在至少3个障碍时，移动速度加倍";
-  difficulty = 2;
+  difficulty = {
+    7: 2,
+    6: 3,
+    5: 3,
+    4: 4,
+    3: 4
+  };
 
   step(state: State) {
     let obstacleCnt = 0;

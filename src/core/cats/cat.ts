@@ -8,7 +8,13 @@ export class Cat {
   color = "black";
   name = "小猫";
   description = "点击小圆点，围住小猫";
-  difficulty = 0;
+  difficulty = {
+    7: 0,
+    6: 1,
+    5: 1,
+    4: 2,
+    3: 3
+  };
 
   reset() {}
 

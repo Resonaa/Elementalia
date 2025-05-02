@@ -7,7 +7,13 @@ export class GreenCat extends Cat {
   name = "绿猫";
   color = "#008000";
   description = "移动后击退前方障碍";
-  difficulty = 1;
+  difficulty = {
+    7: 1,
+    6: 1,
+    5: 2,
+    4: 2,
+    3: 3
+  };
 
   step(state: State) {
     const move = super.step(state);

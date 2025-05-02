@@ -158,7 +158,7 @@ export class SVGRenderer extends Renderer {
         value,
         type: "diff"
       },
-      duration: 0.2,
+      duration: 0,
       overwrite: true
     });
   }
@@ -326,7 +326,13 @@ export class SVGRenderer extends Renderer {
           this.updateMessage(state.cat.description);
           this.placeCat(state);
           this.showButtons();
-          this.updateTurns("★".repeat(state.cat.difficulty));
+          this.updateTurns(
+            "★".repeat(
+              state.cat.difficulty[
+                state.board.depth as keyof typeof state.cat.difficulty
+              ]
+            )
+          );
           this.tl.play();
         } else {
           // player has clicked a circle, we should play cat move animation and update message

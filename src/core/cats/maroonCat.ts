@@ -11,7 +11,13 @@ export class MaroonCat extends Cat {
   color = "#9b0101";
   shouldWin = false;
   description = "障碍覆盖率低于50%时，围猫会导致游戏失败";
-  difficulty = 1;
+  difficulty = {
+    7: 1,
+    6: 1,
+    5: 2,
+    4: 2,
+    3: 3
+  };
 
   reset() {
     this.shouldWin = false;
