@@ -12,10 +12,6 @@
     --obstacle-color: #b3d9ff;
     --circle-color: #003366;
   }
-
-  image {
-    filter: invert(1);
-  }
 }
 
 body {

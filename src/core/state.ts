@@ -7,6 +7,7 @@ import { Pos } from "../models/pos";
 import type { IConfig } from "./config";
 
 import { BlueCat } from "./cats/blueCat";
+import { BrownCat } from "./cats/brownCat";
 import { Cat } from "./cats/cat";
 import { CyanCat } from "./cats/cyanCat";
 import { GreenCat } from "./cats/greenCat";
@@ -15,6 +16,7 @@ import { OrangeCat } from "./cats/orangeCat";
 import { PinkCat } from "./cats/pinkCat";
 import { PurpleCat } from "./cats/purpleCat";
 import { RedCat } from "./cats/redCat";
+import { YellowCat } from "./cats/yellowCat";
 
 const cats = [
   new Cat(),
@@ -25,7 +27,9 @@ const cats = [
   new OrangeCat(),
   new PinkCat(),
   new PurpleCat(),
-  new MaroonCat()
+  new MaroonCat(),
+  new YellowCat(),
+  new BrownCat()
 ];
 
 export class State {
