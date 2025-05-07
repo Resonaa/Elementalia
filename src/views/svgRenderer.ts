@@ -85,24 +85,26 @@ export class SVGRenderer extends Renderer {
 
         <b>Q1: 游戏怎么玩？</b><br>
         A1: 点击小圆点，围住小猫<br>
-        <b>Q2: 游戏有解吗？</b><br>
-        A2: 不保证理论有解，★★★及以上难度仅供娱乐<br>
-        <b>Q3: xx猫是人玩的？！</b><br>
-        A3: 意见反馈请前往作者粉丝群（不对外开放）<br>
-        <b>Q4: 我发现了Bug！</b><br>
-        A4: 作者实力问题<br>
-        <b>Q5: 爱猫影响我积攒功德吗</b><br>
-        A5: 建议花费1000元宝洗红名，否则回城后将被强制传送至天牢<br>
+        <b>Q2: 是否一定有解？</b><br>
+        A2: ★★★及以上难度不保证通关可行性<br>
+        <b>Q3: 有没有必胜策略？</b><br>
+        A3: 可以证明，初始平凡难度下即不存在必胜策略（您可能对“天使问题”感兴趣）<br>
+        <b>Q4: 太简单了吧</b><br>
+        A4: 意见反馈请前往作者粉丝群（不对外开放）<br>
+        <b>Q5: 我发现了Bug！</b><br>
+        A5: 作者实力问题<br>
+        <b>Q6: 爱猫影响我积攒功德吗</b><br>
+        A6: 建议花费1000元宝洗红名，否则回城后将被强制传送至天牢<br>
 
         </div>
         `
       });
     };
 
-    this.turnsElem.addEventListener("pointerdown", showHint);
-    this.messageElem.addEventListener("pointerdown", showHint);
+    this.turnsElem.addEventListener("click", showHint);
+    this.messageElem.addEventListener("click", showHint);
     const meta = document.getElementById("meta") as HTMLDivElement;
-    meta.addEventListener("pointerdown", showHint);
+    meta.addEventListener("click", showHint);
   }
 
   private updateViewBox(state: State) {
