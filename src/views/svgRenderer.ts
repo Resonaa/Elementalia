@@ -78,10 +78,23 @@ export class SVGRenderer extends Renderer {
     const showHint = (e: Event) => {
       e.preventDefault();
       Swal.fire({
-        titleText: "提示",
+        titleText: "常见问题",
         showConfirmButton: false,
         html: `
-        ★★★及以上难度仅供娱乐
+        <div style="text-align: left; font-size: 1.25rem">
+
+        <b>Q1: 游戏怎么玩？</b><br>
+        A1: 点击小圆点，围住小猫<br>
+        <b>Q2: 游戏有解吗？</b><br>
+        A2: 不保证理论有解，★★★及以上难度仅供娱乐<br>
+        <b>Q3: xx猫是人玩的？！</b><br>
+        A3: 意见反馈请前往作者粉丝群（不对外开放）<br>
+        <b>Q4: 我发现了Bug！</b><br>
+        A4: 作者实力问题<br>
+        <b>Q5: 爱猫影响我积攒功德吗</b><br>
+        A5: 建议花费1000元宝洗红名，否则回城后将被强制传送至天牢<br>
+
+        </div>
         `
       });
     };
