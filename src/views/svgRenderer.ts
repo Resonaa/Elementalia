@@ -81,7 +81,7 @@ export class SVGRenderer extends Renderer {
         titleText: "常见问题",
         showConfirmButton: false,
         html: `
-        <div style="text-align: left; font-size: 1.25rem">
+        <div style="text-align: left">
 
         <b>Q1: 游戏怎么玩？</b><br>
         A1: 点击小圆点，围住小猫<br>
