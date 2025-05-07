@@ -9,6 +9,7 @@ import type { State } from "../core/state";
 import { Dirs } from "../models/dir";
 
 import { produce } from "immer";
+import Swal from "sweetalert2";
 import { Renderer } from "./renderer";
 
 gsap.registerPlugin(TextPlugin);
@@ -73,6 +74,22 @@ export class SVGRenderer extends Renderer {
         return "";
       });
     }
+
+    const showHint = (e: Event) => {
+      e.preventDefault();
+      Swal.fire({
+        titleText: "提示",
+        showConfirmButton: false,
+        html: `
+        ★★★及以上难度仅供娱乐
+        `
+      });
+    };
+
+    this.turnsElem.addEventListener("pointerdown", showHint);
+    this.messageElem.addEventListener("pointerdown", showHint);
+    const meta = document.getElementById("meta") as HTMLDivElement;
+    meta.addEventListener("pointerdown", showHint);
   }
 
   private updateViewBox(state: State) {
