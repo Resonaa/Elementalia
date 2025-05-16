@@ -26,6 +26,10 @@ export class Pos {
     return new Pos(this.q - other.q, this.r - other.r);
   }
 
+  mulScalar(scalar: number) {
+    return new Pos(this.q * scalar, this.r * scalar);
+  }
+
   toString() {
     return `${this.q},${this.r}`;
   }

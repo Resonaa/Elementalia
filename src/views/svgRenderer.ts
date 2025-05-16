@@ -101,7 +101,6 @@ export class SVGRenderer extends Renderer {
       });
     };
 
-    this.turnsElem.addEventListener("click", showHint);
     this.messageElem.addEventListener("click", showHint);
     const meta = document.getElementById("meta") as HTMLDivElement;
     meta.addEventListener("click", showHint);
@@ -195,35 +194,35 @@ export class SVGRenderer extends Renderer {
     });
   }
 
-  private getCatSize({ catDir }: State) {
+  private getCatSize({ catDir, cat: { size } }: State) {
     if (catDir.includes("top") || catDir.includes("bottom")) {
-      return { width: 2, height: 2.8 };
+      return { width: 2 * size, height: 2.8 * size };
     }
-    return { width: 3.42, height: 1.8 };
+    return { width: 3.42 * size, height: 1.8 * size };
   }
 
-  private getCatPos({ catPos, catDir }: State) {
+  private getCatPos({ catPos, catDir, cat: { size } }: State) {
     const { q, r } = catPos.pixelize();
     const pos = { x: 0, y: 0 };
 
     if (catDir === "bottom_left") {
-      pos.x = q - 1.3;
-      pos.y = r - 1.3;
+      pos.x = q - 1.3 * size;
+      pos.y = r - 1.3 * size;
     } else if (catDir === "bottom_right") {
-      pos.x = q - 0.7;
-      pos.y = r - 1.3;
+      pos.x = q - 0.7 * size;
+      pos.y = r - 1.3 * size;
     } else if (catDir === "left") {
-      pos.x = q - 2.5;
-      pos.y = r - 1.3;
+      pos.x = q - 2.5 * size;
+      pos.y = r - 1.3 * size;
     } else if (catDir === "right") {
-      pos.x = q - 1.0;
-      pos.y = r - 1.3;
+      pos.x = q - 1.0 * size;
+      pos.y = r - 1.3 * size;
     } else if (catDir === "top_left") {
-      pos.x = q - 1.3;
-      pos.y = r - 2.3;
+      pos.x = q - 1.3 * size;
+      pos.y = r - 2.3 * size;
     } else if (catDir === "top_right") {
-      pos.x = q - 0.7;
-      pos.y = r - 2.3;
+      pos.x = q - 0.7 * size;
+      pos.y = r - 2.3 * size;
     }
 
     return pos;

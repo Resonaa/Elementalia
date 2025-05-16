@@ -7,6 +7,7 @@ import type { State } from "../state";
 export class Cat {
   color = "black";
   name = "小猫";
+  size = 1;
   description = "点击小圆点，围住小猫";
   difficulty = {
     7: 0,
