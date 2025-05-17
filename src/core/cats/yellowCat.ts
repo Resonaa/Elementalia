@@ -11,10 +11,10 @@ export class YellowCat extends Cat {
   shouldWin = false;
   description = "若棋盘不是中心对称图形，围猫会导致游戏失败";
   difficulty = {
-    7: 3,
-    6: 3,
+    7: 2,
+    6: 2,
     5: 3,
-    4: 4,
+    4: 3,
     3: 4
   };
 
