@@ -14,6 +14,14 @@ import { Renderer } from "./renderer";
 
 gsap.registerPlugin(TextPlugin);
 
+const LOCK_KEY = "爱猫TV";
+const unlocked = localStorage.getItem(LOCK_KEY) === "true";
+
+window.爱猫TV = () => {
+  localStorage.setItem(LOCK_KEY, !unlocked);
+  location.reload();
+};
+
 export class SVGRenderer extends Renderer {
   svgElem = document.querySelector("svg") as SVGSVGElement;
   messageElem = document.querySelector("header") as HTMLElement;
@@ -31,6 +39,15 @@ export class SVGRenderer extends Renderer {
 
   constructor() {
     super();
+
+    if (unlocked) {
+      this.difficultyBtn.textContent = "难度";
+      this.toggleCatBtn.textContent = "挑战";
+      const meta = document.getElementById("meta") as HTMLDivElement;
+      meta.textContent = "杨浦区青少年爱猫学院";
+      document.title = "围猫高爆服 ～ Éclipse Containment";
+    }
+
     this.setupEventListeners();
   }
 
@@ -77,6 +94,11 @@ export class SVGRenderer extends Renderer {
 
     const showHint = (e: Event) => {
       e.preventDefault();
+
+      if (!unlocked) {
+        return;
+      }
+
       Swal.fire({
         titleText: "常见问题",
         showConfirmButton: false,
