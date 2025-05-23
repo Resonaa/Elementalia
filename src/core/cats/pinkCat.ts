@@ -12,7 +12,7 @@ export class PinkCat extends Cat {
     7: 2,
     6: 2,
     5: 3,
-    4: 4,
+    4: 3,
     3: 4
   };
 

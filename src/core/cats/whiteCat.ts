@@ -6,7 +6,7 @@ export class WhiteCat extends Cat {
   description = "每回合增大20%";
   color = "white";
   difficulty = {
-    7: 3,
+    7: 2,
     6: 3,
     5: 3,
     4: 3,

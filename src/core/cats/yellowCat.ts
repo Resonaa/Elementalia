@@ -15,7 +15,7 @@ export class YellowCat extends Cat {
     6: 2,
     5: 3,
     4: 3,
-    3: 4
+    3: 3
   };
 
   moved = new Set<string>();
